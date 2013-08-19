@@ -78,6 +78,19 @@ module Tily
 			end
 		end
 
+		# Builds the "x, y, index" pairs, and returns these pairs in block
+		def each_tile_with_index level
+			idx = 0
+			size = tile_size level
+			(0...size).each do |y|
+				(0...size).each do |x|
+					yield(x, y, idx) if block_given?
+										$stdout.flush
+					idx += 1
+				end
+			end
+		end
+
 		private
 		# Calculate level size from raw size with the following fomula:
 		#    level = ceil(log2(raw size / unit_size))

@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir['spec/**/*.rb']
 
   s.add_dependency('rmagick', '>= 2.13.2')
-
+  
   s.add_development_dependency 'rake',    '~> 0.9.0'
   s.add_development_dependency 'rspec',   '~> 2.6.0'
 

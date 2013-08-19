@@ -1,65 +1,63 @@
 #!/usr/bin/env ruby
 require 'rmagick'
 require 'FileUtils'
-
-require_relative 'pixel_level'
-require_relative 'config'
+require './tily/utils/tile_system'
 
 include Magick
 
-img_path = "/Users/voidmain/Desktop/el-mundo.jpg"
-target_path = "#{Dir.home()}/Desktop/el-mundo"
+module Tily
+	class Tily
+		attr_accessor :raw_image
+		attr_accessor :output_path
+		attr_accessor :ts
+		attr_accessor :background_color
 
-# Expands (or possibly shrinks) the image size to 
-# tile_size * (2 ** n)
-# returns the modified image size
-def target_level img
-	[img.columns.to_level, img.rows.to_level].max
-end
+		def initialize img_path, output_path, unit_size = 256, background_color = "grey"
+			@raw_image = ImageList.new img_path
+			@output_path = output_path
+			@ts = TileSystem.new unit_size
+			@ts.read_raw_dimension @raw_image.columns, @raw_image.rows
+			@background_color = background_color
+		end
 
-# Calculate QuadKey for tile (<x>, <y>) in <level>
-def quadkey level, x, y
-	x_chars = x.to_binary_str(level).split ""
-	y_chars = y.to_binary_str(level).split ""
+		def gen_tiles
+			norm_size = @ts.normalized_size
+			base_img = Image.new(norm_size, norm_size) { self.background_color = "grey" }
+			base_img = base_img.composite(@raw_image, GravityType::CenterGravity, CompositeOperator::CopyCompositeOp)
 
-	y_chars.zip(x_chars).flatten.join("").to_i(2).to_s(4).rjust(level, "0")
-end
+			puts "Generating images..."
 
-def processing_hint_str number, level
-	total = (level.to_tile ** 2).to_s
-	now   = number.to_s.rjust(total.length, " ")
-	"#{now}/#{total}"
-end
+			@ts.each_level do |level|
+				puts "Level #{level}:"
 
-img = ImageList.new img_path
-level = target_level img
-size = level.to_pixel
-base_img = Image.new(size, size) { self.background_color = "grey" }
-base_img = base_img.composite img, GravityType::CenterGravity, CompositeOperator::CopyCompositeOp
+				level_folder = "#{@output_path}/#{level}"
+				FileUtils.mkdir_p level_folder unless Dir.exists? level_folder
 
-# start generating images
-puts "Generating images..."
+				level_size = @ts.tile_size level
+				level_img  = base_img.resize level_size, level_size
 
-(1..level).each do |cur_level|
-	level_folder = "#{target_path}/#{cur_level}"
-	FileUtils.mkdir_p level_folder unless Dir.exists? level_folder
+				@ts.each_tile_with_index(level) do |x, y, index|
+					tile_img = level_img.crop(@ts.tile_offset(x), @ts.tile_offset(y), @ts.unit_size, @ts.unit_size)
+					tile_img.write("#{level_folder}/#{@ts.quadkey(level, x, y)}.png")
+				end
 
-	level_size = cur_level.to_pixel
-	level_img  = base_img.resize level_size, level_size
-	cur_tile   = 0
+				puts "Done."
+			end
 
-	puts "Level #{cur_level} :"
+			puts "Tiles generated to folder '#{@output_path}'..."
+		end
 
-	(0...cur_level.to_tile).each do |y|
-		(0...cur_level.to_tile).each do |x|
-			cur_tile += 1
-			print "Processing image: #{processing_hint_str(cur_tile, cur_level)}\r"
-			$stdout.flush
-			
-			tile_img = level_img.crop(x.to_pixel_offset, y.to_pixel_offset, ConfigVars.tile_size, ConfigVars.tile_size)
-			tile_img.write("#{level_folder}/#{quadkey(cur_level, x, y)}.png")
+		private
+		# Format a beautiful hint string
+		def processing_hint_str number, level
+			total = (@ts.tile_size(level) ** 2).to_s
+			now   = (number + 1).to_s.rjust(total.length, " ")
+			"#{now}/#{total}"
 		end
 	end
-	puts "\n"
-	puts "Done."
 end
+
+img_path = "/Users/voidmain/Desktop/el-mundo.jpg"
+target_path = "#{Dir.home()}/Desktop/el-mundo"
+tily = Tily::Tily.new img_path, target_path
+tily.gen_tiles
