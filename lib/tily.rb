@@ -57,7 +57,8 @@ module Tily
 	end
 end
 
-img_path = "/Users/voidmain/Desktop/el-mundo.jpg"
-target_path = "#{Dir.home()}/Desktop/el-mundo"
-tily = Tily::Tily.new img_path, target_path
-tily.gen_tiles
+
+#img_path = "/Users/voidmain/Desktop/el-mundo.jpg"
+#target_path = "#{Dir.home()}/Desktop/el-mundo"
+#tily = Tily::Tily.new img_path, target_path
+#tily.gen_tiles
