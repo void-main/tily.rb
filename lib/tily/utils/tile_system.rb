@@ -85,7 +85,6 @@ module Tily
 			(0...size).each do |y|
 				(0...size).each do |x|
 					yield(x, y, idx) if block_given?
-										$stdout.flush
 					idx += 1
 				end
 			end
