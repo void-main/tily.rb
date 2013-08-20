@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.require_paths = %w[lib]
   s.files = `git ls-files`.split("\n")
   s.test_files = Dir['spec/**/*.rb']
-  s.executables = ['bin/tily']
+  s.executables = ['tily']
 
   s.add_dependency('rmagick', '>= 2.13.2')
   s.add_dependency('trollop', '>=2.0')
