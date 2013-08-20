@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 require 'rmagick'
-require 'FileUtils'
+require 'fileutils'
 require 'json'
 require_relative './tily/utils/tile_system'
 
