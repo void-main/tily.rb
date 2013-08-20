@@ -1,7 +1,7 @@
 require './lib/tily/version'
 
 Gem::Specification.new do |s|
-  s.name = 'tily.rb'
+  s.name = 'tily'
   s.version = Tily::VERSION
   s.author = 'Peng Sun'
   s.email = 'voidmain1313113@gmail.com'
