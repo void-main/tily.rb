@@ -44,6 +44,11 @@ module Tily
 			2 ** level
 		end
 
+		# Returns the size of the level image
+		def level_size level
+			@unit_size * tile_size(level)
+		end
+
 		# Returns the pixel offset in the image
 		def tile_offset index
 			@unit_size * index

@@ -23,6 +23,10 @@ describe Tily::TileSystem do
     @ts.tile_size(4).should == 2 ** 4
   end
 
+  it 'should calculate level size correctly' do
+    @ts.level_size(4).should == 4096
+  end
+
   it 'should calculate tile offset correctly' do
     @ts.tile_offset(2).should == 512
   end

@@ -2,7 +2,7 @@
 require 'rmagick'
 require 'FileUtils'
 require 'json'
-require './tily/utils/tile_system'
+require_relative './tily/utils/tile_system'
 
 include Magick
 
@@ -13,7 +13,12 @@ module Tily
 		attr_accessor :ts
 		attr_accessor :background_color
 
-		def initialize img_path, output_path, unit_size = 256, background_color = "grey"
+		def initialize opts
+			img_path = opts[:img_path]
+			output_path = opts[:output_path]
+			unit_size = opts[:unit_size] || 256
+			background_color = opts[:bg_color] || "grey"
+
 			@raw_image = ImageList.new img_path
 			@output_path = output_path
 			@ts = TileSystem.new unit_size
@@ -40,7 +45,7 @@ module Tily
 				level_folder = "#{@output_path}/#{level}"
 				FileUtils.mkdir_p level_folder unless Dir.exists? level_folder
 
-				level_size = @ts.tile_size level
+				level_size = @ts.level_size level
 				level_img  = base_img.resize level_size, level_size
 
 				@ts.each_tile_with_index(level) do |x, y, index|
@@ -63,8 +68,3 @@ module Tily
 		end
 	end
 end
-
-#img_path = "/Users/voidmain/Desktop/el-mundo.jpg"
-#target_path = "#{Dir.home()}/Desktop/el-mundo"
-#tily = Tily::Tily.new img_path, target_path
-#tily.gen_tiles

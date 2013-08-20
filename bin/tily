@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+require 'trollop'
+require '../lib/tily'
+require '../lib/tily/version'
+
+opts = Trollop::options do
+  version "Tily #{Tily::VERSION} (c) 2013 Peng Sun"
+  banner <<-EOS
+A simple map tile generator that divides huge images into classifed levels, with small tile images.
+
+Usage:
+       tily [options]
+where [options] are:
+EOS
+
+  opt :img_path,    "Path to the huge image", :long => "src", :short => "s", :type => :string
+  opt :output_path, "Root path to the output folder", :long => "dest", :short => "d", :type => :string
+  opt :unit_size,   "Size of the unit tile", :long => "unitsize", :short => "u", :type => :int, :default => 256
+  opt :bg_color,    "Color of the expanded part of the image", :long => "background", :short => "b", :type => :string, :default => "grey"
+end
+
+Trollop::die :img_path, "must not be null" unless opts[:img_path]
+Trollop::die :img_path, "must exists" unless File.exist?(opts[:img_path])
+Trollop::die :output_path, "must not be null" unless opts[:output_path]
+
+tily = Tily::Tily.new opts
+tily.gen_tiles
