@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 require 'trollop'
-require '../lib/tily'
-require '../lib/tily/version'
+require_relative '../lib/tily'
+require_relative '../lib/tily/version'
 
 opts = Trollop::options do
   version "Tily #{Tily::VERSION} (c) 2013 Peng Sun"
