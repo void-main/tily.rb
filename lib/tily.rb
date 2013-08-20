@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require 'rmagick'
 require 'FileUtils'
+require 'json'
 require './tily/utils/tile_system'
 
 include Magick
@@ -18,12 +19,18 @@ module Tily
 			@ts = TileSystem.new unit_size
 			@ts.read_raw_dimension @raw_image.columns, @raw_image.rows
 			@background_color = background_color
+
+			FileUtils.mkdir_p @output_path unless Dir.exists? @output_path
 		end
 
 		def gen_tiles
 			norm_size = @ts.normalized_size
 			base_img = Image.new(norm_size, norm_size) { self.background_color = "grey" }
 			base_img = base_img.composite(@raw_image, GravityType::CenterGravity, CompositeOperator::CopyCompositeOp)
+
+			puts "Generating meta-data..."
+			File.open("#{@output_path}/meta.json", "w") {|f| f.write(@ts.meta.to_json) }
+			puts "Done."
 
 			puts "Generating images..."
 
@@ -56,7 +63,6 @@ module Tily
 		end
 	end
 end
-
 
 #img_path = "/Users/voidmain/Desktop/el-mundo.jpg"
 #target_path = "#{Dir.home()}/Desktop/el-mundo"

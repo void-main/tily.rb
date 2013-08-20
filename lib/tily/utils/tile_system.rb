@@ -90,6 +90,16 @@ module Tily
 			end
 		end
 
+		# Generates meta info for current TileSystem
+		def meta
+			{
+				total_level: max_level, 
+				unit_size:   @unit_size,
+				raw_width:   @raw_width, 
+				raw_height:  @raw_height
+			}
+		end
+
 		private
 		# Calculate level size from raw size with the following fomula:
 		#    level = ceil(log2(raw size / unit_size))
